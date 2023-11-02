@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Cookie Clicker Game</title>
+    <link rel="icon" type="image/png" href="cookie_factory_1.png">
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #cookie {
+            width: 300px;
+            height: 220px;
+            background: url('cookie_factory_1.png') no-repeat;
+            background-size: cover;
+            cursor: pointer;
+            margin: 40px auto 0 auto;
+        }
+        #score {
+            font-size: 24px;
+        }
+        #level {
+            font-size: 18px;
+        }
+        #cps {
+            font-size: 18px;
+        }
+        #settings-bar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="settings-bar">
+        <button id="settingsBtn">Infos</button>
+        <p>Cookies Factory</p>
+    </div>
+    <h1>Cookie Clicker Game</h1>
+    <div id="cookie"></div>
+    <p>Click the cookie to earn points!</p>
+    <p>Points: <span id="score">0</span></p>
+    <p>Level: <span id="level">1</span></p>
+    <p>Automatic Cookies per Second: <span id="cps">0</span></p>
+    <button id="upgradeBtn">Upgrade (Cost: 10 points)</button>
+    <button id="autoCookieBtn">Auto Cookie (Cost: 100 cookies)</button>
+    <button id="changeFactoryBtn">Change Factory</button>
+
+    <script>
+        let score = 0;
+        let level = 1;
+        let cookiesPerSecond = 0;
+        let autoCookieCost = 100;
+        let autoCookiePurchased = false;
+        let upgradeCost = 10;
+        let factoryLevel = 1;
+
+        const cookie = document.getElementById('cookie');
+        const scoreDisplay = document.getElementById('score');
+        const levelDisplay = document.getElementById('level');
+        const cpsDisplay = document.getElementById('cps');
+        const upgradeBtn = document.getElementById('upgradeBtn');
+        const autoCookieBtn = document.getElementById('autoCookieBtn');
+        const changeFactoryBtn = document.getElementById('changeFactoryBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+
+        // Fonction pour mettre à jour le cookie en fonction du niveau
+        function updateCookie() {
+            cookie.style.backgroundImage = `url('cookie_factory_${factoryLevel}.png')`;
+        }
+
+        // Fonction pour mettre à jour le niveau
+        function updateLevel() {
+            levelDisplay.innerText = level;
+        }
+
+        // Fonction pour mettre à jour les cookies par seconde (CPS)
+        function updateCPS() {
+            cpsDisplay.innerText = cookiesPerSecond;
+        }
+
+        function changeFactory() {
+            if (factoryLevel === 1 && score >= 2000) {
+                score -= 2000;
+                scoreDisplay.innerText = score;
+                factoryLevel++;
+                updateCookie();
+                changeFactoryBtn.innerText = "Change Factory (Cost: 10000 cookies)"; // Met à jour le texte du bouton
+            } else if (factoryLevel === 2 && score >= 10000) {
+                score -= 10000;
+                scoreDisplay.innerText = score;
+                factoryLevel++;
+                updateCookie();
+                changeFactoryBtn.disabled = true; // Désactive le bouton de changement d'usine
+            }
+        }
+
+        cookie.addEventListener('click', () => {
+            score += 100;
+            scoreDisplay.innerText = score;
+            if (score % 10 === 0) {
+                level++;
+                updateLevel();
+            }
+        });
+
+        upgradeBtn.addEventListener('click', () => {
+            if (score >= upgradeCost) {
+                score -= upgradeCost;
+                scoreDisplay.innerText = score;
+                cookiesPerSecond += 1;
+                upgradeCost *= 2;
+                upgradeBtn.innerText = `Upgrade (Cost: ${upgradeCost} points)`;
+                updateCPS();
+            }
+        });
+
+        autoCookieBtn.addEventListener('click', () => {
+            if (!autoCookiePurchased && score >= autoCookieCost) {
+                score -= autoCookieCost;
+                scoreDisplay.innerText = score;
+                autoCookiePurchased = true;
+                autoCookieBtn.disabled = true;
+                updateCPS();
+                setInterval(() => {
+                    score += cookiesPerSecond;
+                    scoreDisplay.innerText = score;
+                }, 1000);
+            }
+        });
+
+        changeFactoryBtn.addEventListener('click', changeFactory);
+
+        settingsBtn.addEventListener('click', () => {
+            // Ajoutez ici la logique pour gérer les réglages
+            alert("infos \n | Les levels augmentent uniquement en cliquant");
+        });
+
+        updateCookie(); // Initialise le cookie au chargement de la page
+        if (factoryLevel === 2) {
+            changeFactoryBtn.innerText = "Change Factory (Cost: 10000 cookies)";
+        }
+    </script>
+</body>
+</html>
